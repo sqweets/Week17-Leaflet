@@ -51,7 +51,6 @@ function getLegendColor(level) {
   return legendColor;
 }
 
-
 // Get circle colors
 function getCircleColor(magnitude) {
 
@@ -73,11 +72,11 @@ function getCircleColor(magnitude) {
 }
 
 // Define a markerSize function
-function markerSize(magnitude) {
+function circleSize(magnitude) {
   return magnitude * 20000;
 }
 
-// Create the circles
+// Create the Earthquake circles
 url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson";
 var oneCircle;
 var circleLayer = L.layerGroup();
@@ -106,7 +105,7 @@ d3.json(url, function(response) {
       fillColor: getCircleColor(magnitude[i]),
       fillOpacity: 0.95,
       weight: 1,
-      radius: markerSize(magnitude[i])
+      radius: circleSize(magnitude[i])
     }).bindPopup("<h1>Earthquake</h1> <hr> <h3>Magnitude: " + magnitude[i] +  "</h3><h3>Where: " + place[i] + "</h3>").addTo(myMap);
 
     oneCircle.addTo(circleLayer);
@@ -114,11 +113,23 @@ d3.json(url, function(response) {
 
 });
 
+// Get the plate data
+var plates;
+var plateLayer = L.geoJSON();
+
+d3.json("resources/PB2002_boundaries.json", function(plate_data) {
+
+  plates = plate_data.features;
+  for (var k = 0; k < plates.length; k++) {
+    plateLayer.addData(plates[k]);
+  }
+});
+
 // Create the map object
 var myMap = L.map('map', {
       center: [40.7608, -111.8910],
-      zoom: 5,
-      layers: [satellite, circleLayer]
+      zoom: 4,
+      layers: [satellite, circleLayer, plateLayer]
 });
 
 var baseMaps = {
@@ -128,7 +139,8 @@ var baseMaps = {
 };
 
 var overlayMaps = {
-    "Earthquakes": circleLayer
+    "Earthquakes": circleLayer,
+    "Plates": plateLayer
 };
 
 L.control.layers(baseMaps, overlayMaps).addTo(myMap);
