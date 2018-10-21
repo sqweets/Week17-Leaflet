@@ -177,7 +177,7 @@ var baseMaps = {
 
 var overlayMaps = {
     "Earthquakes": circleLayer,
-    "Plates": plateLayer
+    "Fault Lines": plateLayer
 };
 
 L.control.layers(baseMaps, overlayMaps).addTo(myMap);
