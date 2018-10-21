@@ -20,16 +20,40 @@ outdoors = L.tileLayer("https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?acc
 });
 
 
-function getCircleColor(magnitude) {
+// Color hex values
+var zeroToOne = "#B7F34D";
+var oneToTwo = "#E1F34C";
+var twoToThree = "#F3DB4E";
+var threeToFour = "#F3BA4E";
+var fourToFive = "#F0A66B";
+var fivePlus = "#EF6B6B";
+var circleColor;
 
-  // Color hex values
-  var zeroToOne = "#B7F34D";
-  var oneToTwo = "#E1F34C";
-  var twoToThree = "#F3DB4E";
-  var threeToFour = "#F3BA4E";
-  var fourToFive = "#F0A66B";
-  var fivePlus = "#EF6B6B";
-  var circleColor;
+// Get the colors for the legend
+function getLegendColor(level) {
+
+  var legendColor;
+
+  if (level == 6) {
+    legendColor = fivePlus;
+  } else if (level == 5) {
+    legendColor = fourToFive;
+  } else if (level == 4) {
+    legendColor = threeToFour;
+  } else if (level == 3) {
+    legendColor = twoToThree;
+  } else if (level == 2) {
+    legendColor = oneToTwo;
+  } else if (level == 1) {
+    legendColor = zeroToOne;
+  }
+
+  return legendColor;
+}
+
+
+// Get circle colors
+function getCircleColor(magnitude) {
 
   if (magnitude >= 5) {
     circleColor = fivePlus;
@@ -108,6 +132,29 @@ var overlayMaps = {
 };
 
 L.control.layers(baseMaps, overlayMaps).addTo(myMap);
+
+// Create legend control
+var legend = L.control({position: 'bottomright'});
+
+legend.onAdd = function (map) {
+  var div = L.DomUtil.create('div', 'info legend'),
+      magnitudes = [0, 1, 2, 3, 4, 5],
+      labels = [];
+
+  // loop through our magnitudes and generate a label with a colored square for each interval
+  for (var i = 0; i < magnitudes.length; i++) {
+      div.innerHTML +=
+          '<i style="background:' + getLegendColor(magnitudes[i] + 1) + '"></i> ' +
+          magnitudes[i] + (magnitudes[i + 1] ? '&ndash;' + magnitudes[i + 1] + '<br>' : '+');
+  }
+
+  return div;
+}
+
+// Add legend conntrol
+legend.addTo(myMap);
+
+
 
 
 
