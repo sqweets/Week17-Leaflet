@@ -38,6 +38,26 @@ function getLegendColor(level) {
   return legendColor;
 }
 
+function getCircleColor(magnitude) {
+  var circleColor;
+
+  if (magnitude >= 5) {
+    circleColor = fivePlus;
+  } else if (magnitude >= 4) {
+    circleColor = fourToFive;
+  } else if (magnitude >= 3) {
+    circleColor = threeToFour;
+  } else if (magnitude >= 2) {
+    circleColor = twoToThree;
+  } else if (magnitude >= 1) {
+    circleColor = oneToTwo;
+  } else if (magnitude >= 0) {
+    circleColor = zeroToOne;
+  }
+
+  return circleColor;
+}
+
 // Create legend control
 var legend = L.control({position: 'bottomright'});
 
@@ -103,7 +123,6 @@ url = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojso
 // Get the data (This url is for all earthquakes within the last 7 days)
 d3.json(url, function(response) {
 
-  var circleColor;
   var features = response.features;
   console.log(features);
 
@@ -119,27 +138,12 @@ d3.json(url, function(response) {
     place.push(features[j].properties.place);
   }
 
+  // Make the circles
   for (var i = 0; i < location.length; i++) {
-
-    // Figure color
-    if (magnitude[i] >= 5) {
-      circleColor = fivePlus;
-    } else if (magnitude[i] >= 4) {
-      circleColor = fourToFive;
-    } else if (magnitude[i] >= 3) {
-      circleColor = threeToFour;
-    } else if (magnitude[i] >= 2) {
-      circleColor = twoToThree;
-    } else if (magnitude[i] >= 1) {
-      circleColor = oneToTwo;
-    } else if (magnitude[i] >= 0) {
-      circleColor = zeroToOne;
-    }
-
 
     L.circle(location[i], {
       color: 'grey',
-      fillColor: circleColor,
+      fillColor: getCircleColor(magnitude[i]),
       fillOpacity: 0.95,
       weight: 1,
       radius: markerSize(magnitude[i])
